@@ -3,6 +3,7 @@ import itertools
 import tkinter as tk
 import requests
 import os
+import tkinter.messagebox as messagebox
 
 # Version der App
 LOCAL_VERSION = "1.0.0"
@@ -15,11 +16,11 @@ def pruefe_update():
     try:
         remote_version = requests.get(VERSION_URL, timeout=5).text.strip()
         if remote_version != LOCAL_VERSION:
-            if tk.messagebox.askyesno("Update verfügbar", f"Neue Version {remote_version} gefunden. Jetzt herunterladen?"):
+            if messagebox.askyesno("Update verfügbar", f"Neue Version {remote_version} gefunden. Jetzt herunterladen?"):
                 code = requests.get(UPDATE_FILE_URL).text
                 with open(__file__, "w", encoding="utf-8") as f:
                     f.write(code)
-                tk.messagebox.showinfo("Update", "Update abgeschlossen. Bitte starte das Programm neu.")
+                messagebox.showinfo("Update", "Update abgeschlossen. Bitte starte das Programm neu.")
     except Exception as e:
         print("Fehler bei der Updateprüfung:", e)
 
