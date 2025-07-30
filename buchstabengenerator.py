@@ -1,6 +1,27 @@
 import random
 import itertools
 import tkinter as tk
+import requests
+import os
+
+# Version der App
+LOCAL_VERSION = "1.0.0"
+VERSION_URL = "https://raw.githubusercontent.com/Joel-Mueller4/buchstabengenerator/a1c9635d585269c14e0367bd894811a8dbf07947/version.txt"  # <<< HIER DEINE URL EINTRAGEN
+UPDATE_FILE_URL = "https://raw.githubusercontent.com/Joel-Mueller4/buchstabengenerator/a1c9635d585269c14e0367bd894811a8dbf07947/buchstabengenerator.py"  # <<< HIER DEINE URL EINTRAGEN
+
+# Funktion zur Update-Prüfung
+
+def pruefe_update():
+    try:
+        remote_version = requests.get(VERSION_URL, timeout=5).text.strip()
+        if remote_version != LOCAL_VERSION:
+            if tk.messagebox.askyesno("Update verfügbar", f"Neue Version {remote_version} gefunden. Jetzt herunterladen?"):
+                code = requests.get(UPDATE_FILE_URL).text
+                with open(__file__, "w", encoding="utf-8") as f:
+                    f.write(code)
+                tk.messagebox.showinfo("Update", "Update abgeschlossen. Bitte starte das Programm neu.")
+    except Exception as e:
+        print("Fehler bei der Updateprüfung:", e)
 
 # Großbuchstaben von A bis X
 letters = [chr(i) for i in range(ord('A'), ord('X') + 1)]
@@ -117,6 +138,9 @@ fenster.attributes("-topmost", topmost_state)
 # Tastaturbindung
 fenster.bind("<Key>", taste_gedrueckt)
 fenster.focus_force()
+
+# Prüfe beim Start auf Updates
+fenster.after(100, pruefe_update)
 
 # Erstes Paar anzeigen
 aktualisiere_label()
